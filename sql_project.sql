@@ -56,3 +56,7 @@ UPDATE `sql_course_database`.`university_student` SET `student_grade_id` = '80' 
 UPDATE `sql_course_database`.`university_student` SET `student_grade_id` = '50' WHERE (`student_id` = '4');
 select avg(professor_grade_value) from
 university_professor;
+
+select * from university_course c
+right join university_student s
+on c.course_student_id = s.student_id;
