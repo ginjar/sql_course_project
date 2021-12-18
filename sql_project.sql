@@ -57,6 +57,71 @@ UPDATE `sql_course_database`.`university_student` SET `student_grade_id` = '50' 
 select avg(professor_grade_value) from
 university_professor;
 
-select * from university_course c
-right join university_student s
-on c.course_student_id = s.student_id;
+ALTER TABLE `sql_course_database`.`university_professor` 
+DROP FOREIGN KEY `professor_student_id`,
+DROP FOREIGN KEY `professor_course_id`;
+ALTER TABLE `sql_course_database`.`university_professor` 
+DROP COLUMN `professor_grade_value`,
+DROP COLUMN `professor_course_id`,
+DROP COLUMN `professor_student_id`,
+DROP INDEX `professor_grade_value_idx` ,
+DROP INDEX `professor_course_id_idx` ,
+DROP INDEX `professor_student_id_idx` ;
+ALTER TABLE `sql_course_database`.`university_student` 
+DROP FOREIGN KEY `student_professor_id`,
+DROP FOREIGN KEY `student_course_id`;
+ALTER TABLE `sql_course_database`.`university_student` 
+DROP COLUMN `student_professor_id`,
+DROP COLUMN `student_grade_id`,
+DROP COLUMN `student_course_id`,
+DROP INDEX `student_professor_id_idx` ,
+DROP INDEX `student_grade_id_idx` ,
+DROP INDEX `student_course_id_idx` ;
+;
+ALTER TABLE `sql_course_database`.`university_grades` 
+DROP FOREIGN KEY `grade_student_id`,
+DROP FOREIGN KEY `grade_professor_id`,
+DROP FOREIGN KEY `grade_course_id`;
+ALTER TABLE `sql_course_database`.`university_grades` 
+DROP COLUMN `grade_professor_id`,
+DROP COLUMN `grade_course_id`,
+DROP COLUMN `grade_student_id`,
+ADD COLUMN `grades` INT NOT NULL AFTER `grade_value`,
+DROP INDEX `grade_professor_id_idx` ,
+DROP INDEX `grade_course_id_idx` ,
+DROP INDEX `grade_student_id_idx` ;
+;
+UPDATE `sql_course_database`.`university_grades` SET `grades` = 'F' WHERE (`grade_value` = '50');
+UPDATE `sql_course_database`.`university_grades` SET `grades` = 'D' WHERE (`grade_value` = '60');
+UPDATE `sql_course_database`.`university_grades` SET `grades` = 'C' WHERE (`grade_value` = '70');
+UPDATE `sql_course_database`.`university_grades` SET `grades` = 'B' WHERE (`grade_value` = '80');
+UPDATE `sql_course_database`.`university_grades` SET `grades` = 'A' WHERE (`grade_value` = '90');
+ALTER TABLE `sql_course_database`.`university_grades` 
+ADD COLUMN `grades_professor_id` INT NULL AFTER `grades`,
+ADD COLUMN `grades_course_id` INT NULL AFTER `grades_professor_id`,
+ADD COLUMN `grades_student_id` INT NULL AFTER `grades_course_id`,
+ADD INDEX `grades_course_id_idx` (`grades_course_id` ASC) VISIBLE,
+ADD INDEX `student_id_idx` (`grades_student_id` ASC) VISIBLE,
+ADD INDEX `professor_id_idx` (`grades_professor_id` ASC) VISIBLE;
+;
+ALTER TABLE `sql_course_database`.`university_grades` 
+ADD CONSTRAINT `course_id`
+  FOREIGN KEY (`grades_course_id`)
+  REFERENCES `sql_course_database`.`university_course` (`course_id`)
+  ON DELETE NO ACTION
+  ON UPDATE NO ACTION,
+ADD CONSTRAINT `student_id`
+  FOREIGN KEY (`grades_student_id`)
+  REFERENCES `sql_course_database`.`university_student` (`student_id`)
+  ON DELETE NO ACTION
+  ON UPDATE NO ACTION,
+ADD CONSTRAINT `professor_id`
+  FOREIGN KEY (`grades_professor_id`)
+  REFERENCES `sql_course_database`.`university_professor` (`professor_id`)
+  ON DELETE NO ACTION
+  ON UPDATE NO ACTION;
+UPDATE `sql_course_database`.`university_grades` SET `grades_professor_id` = '101', `grades_course_id` = '1050', `grades_student_id` = '4' WHERE (`grade_value` = '50');
+UPDATE `sql_course_database`.`university_grades` SET `grades_professor_id` = '102', `grades_course_id` = '1010', `grades_student_id` = '2' WHERE (`grade_value` = '60');
+UPDATE `sql_course_database`.`university_grades` SET `grades_professor_id` = '103', `grades_course_id` = '1020', `grades_student_id` = '3' WHERE (`grade_value` = '70');
+UPDATE `sql_course_database`.`university_grades` SET `grades_professor_id` = '104', `grades_course_id` = '1030', `grades_student_id` = '5' WHERE (`grade_value` = '80');
+UPDATE `sql_course_database`.`university_grades` SET `grades_professor_id` = '105', `grades_course_id` = '1040', `grades_student_id` = '1' WHERE (`grade_value` = '90');
